@@ -17,7 +17,7 @@ import xgboost as xgb
 logging.root.setLevel(logging.INFO)
 # Establish the constants.
 PATIENCE = 10
-RANDOM_SEED=42
+RANDOM_SEED = 42
 
 #Import and confirm the data:
 months = ["Month "+ str(x) for x in range(1,26)]
@@ -49,23 +49,23 @@ X_train, X_test, y_train, y_test = train_test_split(X_stand, y,
                                                     random_state=RANDOM_SEED)
 # Create Kfolds to train our model on subsets
 # of training instead of a validation set.
+# then gridearch the best variables, train and evaluate our model.
+logging.info("Parameter optimization:")
+xgb_model = xgb.XGBRegressor()
+clf = GridSearchCV(xgb_model,
+                   {'max_depth': [2, 4, 6],
+                    'n_estimators': [50, 100, 200]}, verbose=1, n_jobs=4)
 kf = KFold(n_splits=4, shuffle=True, random_state=RANDOM_SEED)
 for train_index, test_index in kf.split(X_train):
-    xgb_model = xgb.XGBRegressor().fit(np.array(X_train)[train_index],
+    xgb_model = clf.fit(np.array(X_train)[train_index],
                                       np.array(y_train)[train_index])
     y_pred = xgb_model.predict(np.array(X_train)[test_index])
     y_true = np.array(y_train)[test_index]
     logging.info('Base RMSE for fold: %.2f',
                  math.sqrt(mean_squared_error(y_true, y_pred)))
 
-logging.info("Parameter optimization:")
-xgb_model = xgb.XGBRegressor()
-clf = GridSearchCV(xgb_model,
-                   {'max_depth': [2, 4, 6],
-                    'n_estimators': [50, 100, 200]}, verbose=1)
-clf.fit(X_train, y_train)
 logging.info('Best score: %.2f', clf.best_score_)
-logging.info('Best parameter %.2f', clf.best_params_)
+logging.info('Best parameters %s', clf.best_params_)
 pred_test = clf.predict(np.array(X_test))
 logging.info('RMSE Final Test: %.2f', mean_squared_error(y_test, pred_test,
                                                          squared=True))
