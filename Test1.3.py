@@ -28,23 +28,23 @@ PATIENCE = 10
 #Import and confirm the data:
 months = ["Month "+ str(x) for x in range(1,26)]
 #Label the data according to the 25 monthly observations (for human ease).
-testset1A_df = pd.read_csv(ROOT_DIR+"Data/testset3A.csv", names= months)
-testset1B_df = pd.read_csv(ROOT_DIR+"Data/testset3B.csv", names= months)
-testset1C_df = pd.read_csv(ROOT_DIR+"Data/testset3C.csv", names= months)
-testset1D_df = pd.read_csv(ROOT_DIR+"Data/testset3D.csv", names= months)
-testset1E_df = pd.read_csv(ROOT_DIR+"Data/testset3E.csv", names= months)
-testset1_df = pd.concat([testset1A_df,testset1B_df, testset1C_df,
-                         testset1D_df,testset1E_df], ignore_index=True)
+testset3A_df = pd.read_csv(ROOT_DIR+"Data/testset3A.csv", names= months)
+testset3B_df = pd.read_csv(ROOT_DIR+"Data/testset3B.csv", names= months)
+testset3C_df = pd.read_csv(ROOT_DIR+"Data/testset3C.csv", names= months)
+testset3D_df = pd.read_csv(ROOT_DIR+"Data/testset3D.csv", names= months)
+testset3E_df = pd.read_csv(ROOT_DIR+"Data/testset3E.csv", names= months)
+testset3_df = pd.concat([testset3A_df,testset3B_df, testset3C_df,
+                         testset3D_df,testset3E_df], ignore_index=True)
 #Check that the data is according to spec:
 #    having 16000 lines, merged to 80000 lines with 25 columns.
-if not (len(testset1A_df) == len(testset1B_df) == len(testset1C_df) ==
-        len(testset1D_df) == len(testset1E_df) == 16000
-        and len(testset1_df.columns) == 25 and len(testset1_df) == 80000):
+if not (len(testset3A_df) == len(testset3B_df) == len(testset3C_df) ==
+        len(testset3D_df) == len(testset3E_df) == 16000
+        and len(testset3_df.columns) == 25 and len(testset3_df) == 80000):
     logging.warning('Please make sure the dataset is as expected.')
 
 #Remove the 'true' label
-y = testset1_df['Month 25']
-del testset1_df['Month 25']
+y = testset3_df['Month 25']
+del testset3_df['Month 25']
 
 def evaluate_prediction(true_train, pred_train, true_val, pred_val,
                         true_test = None, pred_test = None):
@@ -83,7 +83,7 @@ def format_input_for_network(data, features):
     return data.reshape((data.shape[0], data.shape[1], features))
 
 # Preprocess the data and split into subsets.
-X_norm = preprocessing.normalize(testset1_df.to_numpy())
+X_norm = preprocessing.normalize(testset3_df.to_numpy())
 X_stand = preprocessing.scale(X_norm)
 X_train, X_test, y_train, y_test = train_test_split(X_stand, y,
                                                     train_size=0.7,
