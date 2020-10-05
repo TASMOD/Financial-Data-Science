@@ -54,7 +54,9 @@ logging.info("Parameter optimization:")
 xgb_model = xgb.XGBRegressor()
 clf = GridSearchCV(xgb_model,
                    {'max_depth': [2, 4, 6],
-                    'n_estimators': [50, 100, 200]}, verbose=1, n_jobs=4)
+                    'n_estimators': [50, 100, 200]},
+                    scoring='neg_mean_squared_error',
+                    verbose=1, n_jobs=4)
 kf = KFold(n_splits=4, shuffle=True, random_state=RANDOM_SEED)
 for train_index, test_index in kf.split(X_train):
     xgb_model = clf.fit(np.array(X_train)[train_index],
@@ -64,7 +66,7 @@ for train_index, test_index in kf.split(X_train):
     logging.info('Base RMSE for fold: %.2f',
                  math.sqrt(mean_squared_error(y_true, y_pred)))
 
-logging.info('Best score: %.2f', clf.best_score_)
+logging.info('Best score: %.2f', math.sqrt(clf.best_score_*-1))
 logging.info('Best parameters %s', clf.best_params_)
 pred_test = clf.predict(np.array(X_test))
 logging.info('RMSE Final Test: %.2f', mean_squared_error(y_test, pred_test,
